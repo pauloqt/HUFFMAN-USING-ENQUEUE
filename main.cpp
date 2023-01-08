@@ -126,7 +126,7 @@ int getCodeword(NODE* root, string code){   //every call ng function, execute ni
 }   //basically, lahat ng node ay may sariling codeword dahil na-update ang codeword kada-move, pero ise-save lang ang codeword kapag na-reach ang leaf node
     //kapag natapos ma-reach ang leaf node, babalik ito sa previous node na hindi pa tapos i-execute and Left and right
 
-void displaySorted(){
+void displaySorted(){                       //displays frequency of each character
 NODE *p;
     cout <<"HEX\tCHARACTER\tFREQUENCY\n";
 
@@ -137,24 +137,24 @@ NODE *p;
     }
 }
 
-void displayCodeword(){                             //displays codeword of each character
+void displayCodeword(){                               //displays codeword of each character
     cout<<"\n\nCHARACTER\tCODE\n";
 
-    for(int i=0;i<256;i++){                        //loop to 256 characters
-        if(codeword[i]==""){continue;}              //if walang lamang codeword, skip
+    for(int i=0;i<256;i++){                           //loop to 256 characters
+        if(codeword[i]==""){continue;}                //if walang lamang codeword, skip
         cout<< (char)i <<"\t\t" <<codeword[i] <<endl; //if meron, print caharcter and codeword.
     }
 }
 
-void combineCode(){
+void combineCode(){                            //combines codeword of each character.
 string huffmanCode;
 char ch;
 
-    fstream in(fileName);                       //scan ang fileName
-    while(in.get(ch)){                      //scan ang each character ng text sa file
-        for(i=0; i<256; i++){               //loop sa 256 characters
+    fstream in(fileName);                      //scan ang fileName
+    while(in.get(ch)){                         //scan ang each character ng text sa file
+        for(i=0; i<256; i++){                  //loop sa 256 characters
             if(ch==(char)i){                      //hanapin ang ch sa 256 characters
-                huffmanCode+= codeword[i];   //i-concatenate sa huffmanCode na variable
+                huffmanCode+= codeword[i];     //i-concatenate sa huffmanCode na variable
 
             }
         }
