@@ -13,12 +13,14 @@ typedef struct node{
 char chars[256];                //array of characters to store each character's frequency
 string codeword[256];           //array of characters to store each character's codeword.
 NODE* head, *prevHead;
+char fileName[41];
 int i, length;
 void scanFrequency();
 void enqueue(char ch, int freq, NODE *left, NODE *right);
 void dequeue();
 void createTree();
 int getCodeword(NODE* root, string code);
+void combineCode();
 void displaySorted();
 void displayCodeword();
 void init();
@@ -35,14 +37,16 @@ int main()
     displaySorted();
     cout <<endl;
     createTree();
-    displaySorted();
+    cout <<"\nSIZE OF CHARACTERS: " <<head->freq;
     NODE *root= head;
     getCodeword(root, "");
     displayCodeword();
+    combineCode();
+
+
 }
 
 void scanFrequency(){
-char fileName[41];
 char ch;
 
     init();
@@ -124,22 +128,39 @@ int getCodeword(NODE* root, string code){   //every call ng function, execute ni
 
 void displaySorted(){
 NODE *p;
+    cout <<"HEX\tCHARACTER\tFREQUENCY\n";
 
     p=head;
-    cout <<"\tDISPLAY RECORDS\n\n";
     while(p!=NULL){
-        printf("%d\t%c\t%d\n", p->ch, p->ch, p->freq);
+        printf("%d\t%c\t\t%d\n", p->ch, p->ch, p->freq);
         p=p->nxt;
     }
 }
 
 void displayCodeword(){                             //displays codeword of each character
-    cout <<"CODE WORDS:\n";
+    cout<<"\n\nCHARACTER\tCODE\n";
 
-    for(int i=0;i<=256;i++){                        //loop to 256 characters
+    for(int i=0;i<256;i++){                        //loop to 256 characters
         if(codeword[i]==""){continue;}              //if walang lamang codeword, skip
-        cout<< (char)i <<"\t" <<codeword[i] <<endl; //if meron, print caharcter and codeword.
+        cout<< (char)i <<"\t\t" <<codeword[i] <<endl; //if meron, print caharcter and codeword.
     }
+}
+
+void combineCode(){
+string huffmanCode;
+char ch;
+
+    fstream in(fileName);                       //scan ang fileName
+    while(in.get(ch)){                      //scan ang each character ng text sa file
+        for(i=0; i<256; i++){               //loop sa 256 characters
+            if(ch==(char)i){                      //hanapin ang ch sa 256 characters
+                huffmanCode+= codeword[i];   //i-concatenate sa huffmanCode na variable
+
+            }
+        }
+    }
+    cout<<"HUFFMAN CODE: ";
+    cout <<huffmanCode;
 }
 
 void init(){
