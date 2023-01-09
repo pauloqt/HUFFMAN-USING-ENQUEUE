@@ -12,6 +12,7 @@ typedef struct node{
 
 char chars[256];                //array of characters to store each character's frequency
 string codeword[256];           //array of characters to store each character's codeword.
+string huffmanCode;
 NODE* head, *prevHead;
 char fileName[41];
 int i, length;
@@ -21,6 +22,7 @@ void dequeue();
 void createTree();
 int getCodeword(NODE* root, string code);
 void combineCode();
+void decode(NODE* root, int &index, string huffmanCode);
 void displaySorted();
 void displayCodeword();
 void init();
@@ -43,6 +45,11 @@ int main()
     displayCodeword();
     combineCode();
 
+    int pos = -1;
+	cout << "\n\nDecoded string is: \n";
+	while (pos < (int)huffmanCode.size() - 2) {
+		decode(root, pos, huffmanCode);
+	}
 
 }
 
@@ -147,7 +154,6 @@ void displayCodeword(){                               //displays codeword of eac
 }
 
 void combineCode(){                            //combines codeword of each character.
-string huffmanCode;
 char ch;
 
     fstream in(fileName);                      //scan ang fileName
@@ -161,6 +167,25 @@ char ch;
     }
     cout<<"HUFFMAN CODE: ";
     cout <<huffmanCode;
+}
+
+void decode(NODE* root, int &pos, string huffmanCode)
+{
+	if (root == nullptr) {                 //if walang laman root
+		return;
+	}
+
+	if (!root->left && !root->right)       //if may na-detect na leaf node
+	{
+		cout << root->ch;
+		return;
+	}
+
+	pos++;                               //move to next digit
+	if (huffmanCode[pos] =='1')          //if 1 and digit, move sa right
+		decode(root->right, pos, huffmanCode);
+	else                                   //if 0 ang digit, move sa left
+		decode(root->left, pos, huffmanCode);
 }
 
 void init(){
