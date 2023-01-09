@@ -22,7 +22,8 @@ void dequeue();
 void createTree();
 int getCodeword(NODE* root, string code);
 void combineCode();
-void decode(NODE* root, int &index, string huffmanCode);
+void decompress(NODE* root, int &pos, string huffmanCode);
+void saveCompressed();
 void displaySorted();
 void displayCodeword();
 void init();
@@ -48,8 +49,9 @@ int main()
     int pos = -1;
 	cout << "\n\nDecoded string is: \n";
 	while (pos < (int)huffmanCode.size() - 2) {
-		decode(root, pos, huffmanCode);
+		decompress(root, pos, huffmanCode);
 	}
+	saveCompressed();
 
 }
 
@@ -169,7 +171,7 @@ char ch;
     cout <<huffmanCode;
 }
 
-void decode(NODE* root, int &pos, string huffmanCode)
+void decompress(NODE* root, int &pos, string huffmanCode)
 {
 	if (root == nullptr) {                 //if walang laman root
 		return;
@@ -183,9 +185,27 @@ void decode(NODE* root, int &pos, string huffmanCode)
 
 	pos++;                               //move to next digit
 	if (huffmanCode[pos] =='1')          //if 1 and digit, move sa right
-		decode(root->right, pos, huffmanCode);
+		decompress(root->right, pos, huffmanCode);
 	else                                   //if 0 ang digit, move sa left
-		decode(root->left, pos, huffmanCode);
+		decompress(root->left, pos, huffmanCode);
+}
+
+void saveCompressed(){
+fstream fp;                         //creates a file pointer. fstream para both in and out for iostream.
+fp.open("compressed.txt", ios::out); //filePointerName.method ("file_name", ios::mode). -format to access file.
+
+    if(!fp){
+        cout <<"File error!\n";;
+        system("pause");
+    }
+    else{
+        fp<< huffmanCode;
+    }
+
+    cout <<"\nFile Compressed successfully.\n";
+    system("pause");
+
+    fp.close();
 }
 
 void init(){
