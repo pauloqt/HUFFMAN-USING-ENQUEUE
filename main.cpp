@@ -37,15 +37,20 @@ int main()
         enqueue(i, chars[i], nullptr, nullptr);
     }
 
-    displaySorted();
+    //displaySorted();
     cout <<endl;
     createTree();
     cout <<"\nSIZE OF CHARACTERS: " <<head->freq;
     NODE *root= head;
     getCodeword(root, "");
+    //displayCodeword();
+
+    //(1) COMPRESS
+    displaySorted();
     displayCodeword();
     combineCode();
 
+    //(2) DECOMPRESS
     int pos = -1;
 	cout << "\n\nDecoded string is: \n";
 	while (pos < (int)huffmanCode.size() - 2) {
@@ -163,7 +168,6 @@ char ch;
         for(i=0; i<256; i++){                  //loop sa 256 characters
             if(ch==(char)i){                      //hanapin ang ch sa 256 characters
                 huffmanCode+= codeword[i];     //i-concatenate sa huffmanCode na variable
-
             }
         }
     }
