@@ -8,7 +8,6 @@
 //YGOT, LAICA B.
 //BSCS-NS-2AB
 
-
 using namespace std;
 
 typedef struct node{
@@ -60,7 +59,7 @@ int main()
     init();
     scanFrequency();
 
-    for(i=1; i<256; i++){               //enqueue each character that has frequency.
+    for(i=1; i<256; i++){                               //enqueue each character that has frequency.
         if(chars[i]==0){continue;}
         enqueue(i, chars[i], nullptr, nullptr);
     }
@@ -70,11 +69,8 @@ int main()
     createTree();
     cout <<"\n\n\t\t\t\t\t\t\t\t" <<"SIZE OF CHARACTERS: " <<head->freq;
     cout <<"\n\n\t\t\t\t\t\t\t\t"; system("pause");
-    //gotoxy(64,40); cout <<"SIZE OF CHARACTERS: " <<head->freq;
-    //gotoxy(60,49); system("pause");
     NODE *root= head;
     getCodeword(root, "");
-    //displayCodeword();
 
     while (1){
             ch = menu();
@@ -117,25 +113,34 @@ char ch;
 void enqueue(char ch, int freq, NODE *left, NODE *right){   //insert node at the last/rear
 NODE *q, *p, *n;
 
-    n= new NODE;                //allocates memory to n
+    n= new NODE;
     n->ch=ch;
     n->freq=freq;
     n->left= left;
     n->right= right;
 
-    p=q=head;                   //set lahat sa head
-    //cout <<n->freq;
+    p=q=head;
+
     while(p!=NULL && n->freq >= p->freq){
         q=p;
         p=p->nxt;
     }
 
-    if(p==head){                //If wala pang laman
+    if(p==head){
         head=n;
     }
-    else{q->nxt=n;}             //if may laman na
+    else{q->nxt=n;}
 
-    n->nxt=p;                   //lagay NULL sa dulo which is p.
+    n->nxt=p;
+}
+
+void dequeue(){                             //deletes the first node (head) of queue.
+NODE *p ;
+
+    p=head;
+    head=p->nxt;                            //i-move ang head sa kasunod.
+    prevHead=p;                             //isalin ang dating head sa prevHead variable
+    prevHead->nxt=nullptr;                  //gawing null ang nxt ng prevhead.
 }
 
 void createTree(){                          //creates new node and assigns left and right child then enqueue the new node.
@@ -148,15 +153,6 @@ int freq;
         freq= left->freq + right->freq;     //kunin ang sum ng frequency ng left and right
         enqueue(NULL, freq, left, right);   //enqueue para makabuo ng new node na may left and right child
     }
-}
-
-void dequeue(){             //deletes the first node (head) of queue.
-NODE *p ;
-
-    p=head;
-    head=p->nxt;            //i-move ang head sa kasunod.
-    prevHead=p;             //isalin ang dating head sa prevHead variable
-    prevHead->nxt=nullptr;  //gawing null ang nxt ng prevhead.
 }
 
 int getCodeword(NODE* root, string code){   //traverse the huffman tree and records codeword of each character.
@@ -198,20 +194,20 @@ void displayCodeword(){                               //displays codeword of eac
         if((char)i==' '){cout <<"\t\t\t\t\t\t\t\t" <<"space";}
         else if((char)i=='\n'){cout <<"\t\t\t\t\t\t\t\t" <<"line";}
         else{cout <<"\t\t\t\t\t\t\t\t"<< (char)i;}
-        cout <<"\t\t\t" <<codeword[i] <<endl; //if meron, print caharcter and codeword.
+        cout <<"\t\t\t" <<codeword[i] <<endl;         //if meron, print caharcter and codeword.
 
     }
 }
 
-void combineCode(){                            //combines codeword of each character into one string.
+void combineCode(){                                 //combines codeword of each character into one string.
 char ch;
 
     huffmanCode="";
-    fstream in(fileName);                      //scan ang fileName
-    while(in.get(ch)){                         //scan ang each character ng text sa file
-        for(i=0; i<256; i++){                  //loop sa 256 characters
-            if(ch==(char)i){                      //hanapin ang ch sa 256 characters
-                huffmanCode+= codeword[i];     //i-concatenate sa huffmanCode na variable
+    fstream in(fileName);                           //scan ang fileName
+    while(in.get(ch)){                              //scan ang each character ng text sa file
+        for(i=0; i<256; i++){                       //loop sa 256 characters
+            if(ch==(char)i){                        //hanapin ang ch sa 256 characters
+                huffmanCode+= codeword[i];          //i-concatenate sa huffmanCode na variable
             }
         }
     }
@@ -243,9 +239,9 @@ void decompress(NODE* root, int &pos, string huffmanCode)   //traverse to the hu
 		decompress(root->left, pos, huffmanCode);
 }
 
-void saveCompressed(){              //saves the compressed text to the file
-fstream fp;                         //creates a file pointer. fstream para both in and out for iostream.
-fp.open("compressed.txt", ios::out); //filePointerName.method ("file_name", ios::mode). -format to access file.
+void saveCompressed(){                      //saves the compressed text to the file
+fstream fp;                                 //creates a file pointer. fstream para both in and out for iostream.
+fp.open("compressed.txt", ios::out);        //filePointerName.method ("file_name", ios::mode). -format to access file.
 
     if(!fp){
         gotoxy(64,34);cout <<"File error!";;
@@ -260,7 +256,7 @@ fp.open("compressed.txt", ios::out); //filePointerName.method ("file_name", ios:
     fp.close();
 }
 
-void init(){                    //initializes the value of array chars[256]
+void init(){                                //initializes the value of array chars[256]
     head= NULL;
     for(i=0; i<=256; i++)
         chars[i]=0;
