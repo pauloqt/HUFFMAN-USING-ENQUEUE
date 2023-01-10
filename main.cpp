@@ -2,6 +2,13 @@
 #include <fstream>
 #include <windows.h>
 
+//A Program that compresses and decompresses a text file using Huffman Coding Technique.
+//Please create "original.txt" and "compressed.txt" before running
+//ALCANTARA, JOHN PAULO C.
+//YGOT, LAICA B.
+//BSCS-NS-2AB
+
+
 using namespace std;
 
 typedef struct node{
@@ -38,6 +45,7 @@ void display();
 void displayMenu();
 void CodeDisplay();
 void decodeDisplay();
+void displayTitle();
 void init();
 
 
@@ -52,7 +60,7 @@ int main()
     init();
     scanFrequency();
 
-    for(i=1; i<256; i++){               //enqueue each character na may frequency.
+    for(i=1; i<256; i++){               //enqueue each character that has frequency.
         if(chars[i]==0){continue;}
         enqueue(i, chars[i], nullptr, nullptr);
     }
@@ -62,6 +70,8 @@ int main()
     createTree();
     cout <<"\n\n\t\t\t\t\t\t\t\t" <<"SIZE OF CHARACTERS: " <<head->freq;
     cout <<"\n\n\t\t\t\t\t\t\t\t"; system("pause");
+    //gotoxy(64,40); cout <<"SIZE OF CHARACTERS: " <<head->freq;
+    //gotoxy(60,49); system("pause");
     NODE *root= head;
     getCodeword(root, "");
     //displayCodeword();
@@ -71,24 +81,24 @@ int main()
                     switch (ch)
                 {
                     case 1:system("cls"); CodeDisplay();displayCodeword();combineCode(); saveCompressed(); cout <<"\n\n\t\t\t\t\t\t\t\t"; system("pause");break;
-                    case 2:system("cls"); design();decodeDisplay();gotoxy(101,20);cout << "C:\>_Decoded string is...";gotoxy(101,22);cout <<"";
+                    case 2:system("cls");decodeDisplay(); gotoxy(75,22);cout << "C:\>_Decoded string is...";gotoxy(75,25);cout <<"";
                     pos=-1; while (pos < (int)huffmanCode.size() - 2) {
-                    decompress(root, pos, huffmanCode);} system("pause"); break;
+                    decompress(root, pos, huffmanCode);} cout <<"\n\n\t\t\t\t\t\t\t\t";system("pause"); break;
                     case 3:exit(0);gotoxy(67,49);system("pause");
                     default:  gotoxy(98,32);cout <<"Enter only numbers 1 to 3."<<endl;gotoxy(67,49);system("pause");
        }
     }
 }
 
-void scanFrequency(){
+void scanFrequency(){                   //Scans frequency of each character in the text
 char ch;
 
     init();
     design();
-    gotoxy(85,25);cout <<"Enter file name: ";
+    displayTitle();
+    gotoxy(85,25);cout <<"Enter file name to compress: ";
     cin >>fileName;
-    ifstream in(fileName);              //ifstream has methods for input output operations on file
-
+    ifstream in(fileName);              //ifstream has methods for input output operations on files
     if(in.fail()){
          gotoxy(90,27);cout <<"FILE ERROR!\n";
          gotoxy(60,49);system("pause");
@@ -101,9 +111,10 @@ char ch;
         }
     }
     system("cls");
+    ifstream close(fileName);
 }
 
-void enqueue(char ch, int freq, NODE *left, NODE *right){
+void enqueue(char ch, int freq, NODE *left, NODE *right){   //insert node at the last/rear
 NODE *q, *p, *n;
 
     n= new NODE;                //allocates memory to n
@@ -127,7 +138,7 @@ NODE *q, *p, *n;
     n->nxt=p;                   //lagay NULL sa dulo which is p.
 }
 
-void createTree(){
+void createTree(){                          //creates new node and assigns left and right child then enqueue the new node.
 NODE *left, *right;
 int freq;
 
@@ -139,7 +150,7 @@ int freq;
     }
 }
 
-void dequeue(){             //deletes the last first node (head) of queue.
+void dequeue(){             //deletes the first node (head) of queue.
 NODE *p ;
 
     p=head;
@@ -148,8 +159,8 @@ NODE *p ;
     prevHead->nxt=nullptr;  //gawing null ang nxt ng prevhead.
 }
 
-int getCodeword(NODE* root, string code){   //every call ng function, execute niya ito using kung saang node nag-move at ang updated codeword
-
+int getCodeword(NODE* root, string code){   //traverse the huffman tree and records codeword of each character.
+                                            //every call ng function, execute niya ito using kung saang node nag-move at ang updated codeword
     if(root==nullptr)                       //if walang laman ang tree
         return 0;
 
@@ -162,17 +173,18 @@ int getCodeword(NODE* root, string code){   //every call ng function, execute ni
 }   //basically, lahat ng node ay may sariling codeword dahil na-update ang codeword kada-move, pero ise-save lang ang codeword kapag na-reach ang leaf node
     //kapag natapos ma-reach ang leaf node, babalik ito sa previous node na hindi pa tapos i-execute and Left and right
 
-void displaySorted(){                       //displays frequency of each character
+void displaySorted(){                       //displays sorted frequency of each character
 NODE *p;
 int i=0;
     display();
     p=head;
     while(p!=NULL){
-
         gotoxy(30,11+i);printf("%d", p->ch);
-        gotoxy(69,11+i);printf("%c", p->ch);
+        if(p->ch==' '){gotoxy(69,11+i); cout <<"space";}
+        else if(p->ch=='\n'){gotoxy(69,11+i); cout <<"new line";}
+        else{gotoxy(69,11+i);printf("%c", p->ch);}
         gotoxy(125,11+i);printf("%d", p->freq);
-        i+=2;
+        i+=1;
         p=p->nxt;
     }
 }
@@ -180,13 +192,18 @@ int i=0;
 void displayCodeword(){                               //displays codeword of each character
     system("cls");
     CodeDisplay();
+    cout <<endl <<endl;
     for(int i=0;i<256;i++){                           //loop to 256 characters
         if(codeword[i]==""){continue;}                //if walang lamang codeword, skip
-          cout<<"\t\t\t\t\t\t\t\t"<< (char)i <<"\t\t\t" <<codeword[i] <<endl; //if meron, print caharcter and codeword.
+        if((char)i==' '){cout <<"\t\t\t\t\t\t\t\t" <<"space";}
+        else if((char)i=='\n'){cout <<"\t\t\t\t\t\t\t\t" <<"line";}
+        else{cout <<"\t\t\t\t\t\t\t\t"<< (char)i;}
+        cout <<"\t\t\t" <<codeword[i] <<endl; //if meron, print caharcter and codeword.
+
     }
 }
 
-void combineCode(){                            //combines codeword of each character.
+void combineCode(){                            //combines codeword of each character into one string.
 char ch;
 
     huffmanCode="";
@@ -198,11 +215,16 @@ char ch;
             }
         }
     }
-    gotoxy(79,28);cout<<"HUFFMAN CODE: ";
-    gotoxy(40,30);cout<<huffmanCode;
+    cout<<endl;
+    cout <<"\n\n\t\t\t\t\t\t\t\t\t" << "HUFFMAN CODE: ";
+    cout <<"\n\n\t\t\t\t\t"  <<huffmanCode;
+    cout <<"\n\n\t\t\t\t\tTHE ORIGINAL FILE SIZE IS: " <<head->freq <<" BYTES OR " <<head->freq*8 <<" BITS.\n";
+    cout <<"\n\t\t\t\t\tTHE COMPRESSED FILE SIZE IS: " <<huffmanCode.size()/8 <<" BYTES OR " <<huffmanCode.size() <<" BITS.\n";
+    float huffbyte= huffmanCode.size()/8;
+    cout <<"\n\t\t\t\t\tTHE COMPRESSION RATIO IS: " <<(huffbyte/head->freq)*100 <<" %.\n";
 }
 
-void decompress(NODE* root, int &pos, string huffmanCode)
+void decompress(NODE* root, int &pos, string huffmanCode)   //traverse to the huffman tree using the huffman code that serves as the path
 {
 	if (root == nullptr) {                 //if walang laman root
 		return;
@@ -221,24 +243,24 @@ void decompress(NODE* root, int &pos, string huffmanCode)
 		decompress(root->left, pos, huffmanCode);
 }
 
-void saveCompressed(){
+void saveCompressed(){              //saves the compressed text to the file
 fstream fp;                         //creates a file pointer. fstream para both in and out for iostream.
 fp.open("compressed.txt", ios::out); //filePointerName.method ("file_name", ios::mode). -format to access file.
 
     if(!fp){
-        gotoxy(64,40);cout <<"File error!";;
+        gotoxy(64,34);cout <<"File error!";;
         gotoxy(60,49);system("pause");
     }
     else{
         fp<< huffmanCode;
     }
-
-    gotoxy(105,36);cout <<"File Compressed successfully.";
+    cout<<endl;
+    cout <<"\n\n\t\t\t\t\t\t\t\t" <<"File Compressed successfully.";
 
     fp.close();
 }
 
-void init(){
+void init(){                    //initializes the value of array chars[256]
     head= NULL;
     for(i=0; i<=256; i++)
         chars[i]=0;
@@ -299,8 +321,7 @@ void gotoxy(int x,int y){
 }
 
 void design(){
-gotoxy(30,5);cout << R"(
-
+gotoxy(30,13);cout << R"(
               (`  ).                   _
              (     ).              .:(`  )`.               .   \_,!,_/   ,
 )           _(       '`.          :(   .    )               `.,'     `.,'
@@ -311,7 +332,6 @@ gotoxy(30,5);cout << R"(
 )  )  ( )       --'       `- __.'         :(      ))       '   / `!` \   `
 .-'  (_.'          .')                    `(    )  ))         ;   :   ;
                   (_  )                     ` __.:'
-
                                                          .-------.-------.
           +-------------+                     ___        |  0000 |  0100 |
           |             |                     \ /]       |  0001 |  0110 |
@@ -331,7 +351,6 @@ gotoxy(30,5);cout << R"(
           |             | [/]     []| |_  |                  |
           |             | [\]     []|___) |                  |
         ====================================================================
-
             )";
 
 
@@ -343,7 +362,6 @@ gotoxy(30,5);cout << R"(
                         | || || __|\ \/ /     / __|| || |  /_\  | _ \  /_\  / __||_   _|| __|| _ \      | __|| _ \| __|/ _ \ | | | || __|| \| | / __|\ \ / /
                         | __ || _|  >  <     | (__ | __ | / _ \ |   / / _ \| (__   | |  | _| |   /      | _| |   /| _|| (_) || |_| || _| | .` || (__  \ V /
                         |_||_||___|/_/\_\     \___||_||_|/_/ \_\|_|_\/_/ \_\\___|  |_|  |___||_|_\      |_|  |_|_\|___|\__\_\ \___/ |___||_|\_| \___|  |_|
-
                 )";
 
 
@@ -366,28 +384,31 @@ void CodeDisplay(){
                 )";
  }
 void decodeDisplay(){
-gotoxy(95,17);cout<<"  _______________________________________________";
-gotoxy(95,18);cout<<" /                                                \\";
-gotoxy(95,19);cout<<"|    _________________________________________     |";
-gotoxy(95,20);cout<<"|   |                                         |    |";
-gotoxy(95,21);cout<<"|   |                                         |    |";
-gotoxy(95,22);cout<<"|   |                                         |    |";
-gotoxy(95,23);cout<<"|   |                                         |    |";
-gotoxy(95,24);cout<<"|   |                                         |    |";
-gotoxy(95,25);cout<<"|   |                                         |    |";
-gotoxy(95,26);cout<<"|   |                                         |    |";
-gotoxy(95,27);cout<<"|   |                                         |    |";
-gotoxy(95,28);cout<<"|   |_________________________________________|    |";
-gotoxy(95,29);cout<<"|                                                  |";
-gotoxy(95,30);cout<<"\\_________________________________________________/";
-gotoxy(95,31);cout<<"       \\___________________________________/";
-gotoxy(95,32);cout<<"     ___________________________________________";
-gotoxy(95,33);cout<<"  _-'    .-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.  --- `-_";
-gotoxy(95,34);cout<<"_-'.-.-. .---.-.-.-.-.-.-.-.-.-.-.-.-.-.-.--.  .-.-.`-_";
+gotoxy(10,4);cout << R"(
+                                                  ___  ___  _     ___   ___   ___  ___  ___   __  __  ___  ___  ___  ___  ___  ___  ___
+                                                 | __||_ _|| |   | __| |   \ | __|/ __|/ _ \ |  \/  || _ \| _ \| __|/ __|/ __|| __||   \
+                                                 | _|  | | | |__ | _|  | |) || _|| (__| (_) || |\/| ||  _/|   /| _| \__ \\__ \| _| | |) |
+                                                 |_|  |___||____||___| |___/ |___|\___|\___/ |_|  |_||_|  |_|_\|___||___/|___/|___||___/
 
+    )";
 
 }
 
+void displayTitle(){
+gotoxy(10,4); cout <<R"(
+                                                          _____ _____  _______    ___ ___  __  __ ___ ___ ___ ___ ___ ___ ___  _  _     __
+                                                         |_   _| __\ \/ /_   _|  / __/ _ \|  \/  | _ \ _ \ __/ __/ __|_ _/ _ \| \| |    / _|___
+                                                           | | | _| >  <  | |   | (_| (_) | |\/| |  _/   / _|\__ \__ \| | (_) | .` |    > _|_ _|
+                                                           |_| |___/_/\_\ |_|    \___\___/|_|  |_|_| |_|_\___|___/___/___\___/|_|\_|     \_____|
+                                                      ___  ___ ___ ___  __  __ ___ ___ ___ ___ ___ ___ ___  _  _   ___ ___  ___   ___ ___    _   __  __
+                                                     |   \| __/ __/ _ \|  \/  | _ \ _ \ __/ __/ __|_ _/ _ \| \| | | _ \ _ \/ _ \ / __| _ \  /_\ |  \/  |
+                                                     | |) | _| (_| (_) | |\/| |  _/   / _|\__ \__ \| | (_) | .` | |  _/   / (_) | (_ |   / / _ \| |\/| |
+                                                     |___/|___\___\___/|_|  |_|_| |_|_\___|___/___/___\___/|_|\_| |_| |_|_\\___/ \___|_|_\/_/ \_\_|  |_|
 
+
+
+    )";
+
+}
 
 
